@@ -30,7 +30,8 @@ RUN mkdir -p /tmp/hadoop-hadoop
 
 WORKDIR /opt/hadoop
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+# for non M1/M2 mac use: ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-arm64/
 ENV HADOOP_HOME /opt/hadoop
 ENV PATH $PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
