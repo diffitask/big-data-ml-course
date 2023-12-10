@@ -52,3 +52,7 @@ http://localhost:8088/proxy/application_1702205477704_0003/
 
 <img src="block-1/screenshots/4-tasks-1.png">
 <img src="block-1/screenshots/4-tasks-2.png">
+
+## Блок 2: Работа с данными
+
+В ноутбуке: 
