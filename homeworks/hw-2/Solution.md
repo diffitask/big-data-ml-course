@@ -1,6 +1,6 @@
 # Домашнее задание 2
 
-Ноутбук с кодом домашнего задания:
+Ноутбук с кодом домашнего задания: [hw-2](https://github.com/diffitask/big-data-ml-course/blob/hw-2/homeworks/hw-2/homework-2.ipynb)
 
 ## Блок 1: Spark Application
 
@@ -55,7 +55,7 @@ http://localhost:8088/proxy/application_1702205477704_0003/
 
 ## Блок 2: Работа с данными
 
-В ноутбуке: 
+В ноутбуке: [hw-2](https://github.com/diffitask/big-data-ml-course/blob/hw-2/homeworks/hw-2/homework-2.ipynb)
 
 ## Блок 3: UDF
 
