@@ -56,3 +56,18 @@ http://localhost:8088/proxy/application_1702205477704_0003/
 ## Блок 2: Работа с данными
 
 В ноутбуке: 
+
+## Блок 3: UDF
+
+DAG вычислений job'ы show после применения UDF:
+
+<img src="block-3/screenshots/show-dag-1.png" height="600">
+<img src="block-3/screenshots/show-dag-2.png">
+
+При подсчете RMSE генерируются 3 job'ы, в каждой по одному стейджу и одной таске:
+
+<img src="block-3/screenshots/rmse-jobs.png">
+<img src="block-3/screenshots/rmse-job-1.png">
+<img src="block-3/screenshots/rmse-job-2.png">
+<img src="block-3/screenshots/rmse-job-3-1.png">
+<img src="block-3/screenshots/rmse-job-3-2.png">
