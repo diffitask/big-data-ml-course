@@ -1,4 +1,4 @@
-from pyflink.common import SimpleStringSchema, Configuration
+from pyflink.common import SimpleStringSchema, Configuration, Time
 from pyflink.common.typeinfo import Types, RowTypeInfo
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.datastream import StreamExecutionEnvironment, TimeCharacteristic, CheckpointingMode, \
@@ -7,10 +7,19 @@ from pyflink.datastream.connectors import DeliveryGuarantee
 from pyflink.datastream.connectors.kafka import KafkaSource, \
     KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
 from pyflink.datastream.formats.json import JsonRowDeserializationSchema
-from pyflink.datastream.functions import MapFunction
+from pyflink.datastream.functions import WindowFunction
+from pyflink.datastream.window import TumblingProcessingTimeWindows
 
 
-def python_data_stream():
+def get_sample_device_id(data_sample):
+    return data_sample['device_id']
+
+
+def get_sample_temperature(data_sample):
+    return data_sample['temperature']
+
+
+def python_data_stream(producer_topic, consumer_topic):
     env = StreamExecutionEnvironment.get_execution_environment()
     # Set the parallelism to be one to make sure that all data including fired timer and normal data
     # are processed by the same worker and the collected result would be in order which is good for
@@ -23,7 +32,6 @@ def python_data_stream():
 
     # start a checkpoint every 1000 ms
     env.enable_checkpointing(interval=1000)
-
     # advanced checkpointing options:
     # set mode to exactly-once (this is the default)
     env.get_checkpoint_config().set_checkpointing_mode(CheckpointingMode.EXACTLY_ONCE)
@@ -49,7 +57,7 @@ def python_data_stream():
     # source -- our consumer data
     source = KafkaSource.builder() \
         .set_bootstrap_servers('kafka:9092') \
-        .set_topics('hse2023') \
+        .set_topics(producer_topic) \
         .set_group_id('pyflink-e2e-source') \
         .set_starting_offsets(KafkaOffsetsInitializer.earliest()) \
         .set_value_only_deserializer(json_row_schema) \
@@ -60,7 +68,7 @@ def python_data_stream():
     sink = KafkaSink.builder() \
         .set_bootstrap_servers('kafka:9092') \
         .set_record_serializer(KafkaRecordSerializationSchema.builder()
-                               .set_topic('hse2023_processed')
+                               .set_topic(consumer_topic)
                                .set_value_serialization_schema(SimpleStringSchema())
                                .build()
                                ) \
@@ -71,18 +79,23 @@ def python_data_stream():
     ds = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
 
     # data transformation
-    # convert Kelvins -> Celsius
-    ds.map(TemperatureFunction(), Types.STRING()) \
+    # tumbling processing-time windows
+    ds \
+        .key_by(key_selector=get_sample_device_id) \
+        .window(TumblingProcessingTimeWindows.of(Time.seconds(5))) \
+        .apply(window_function=MaxTemperatureWindowFunction(), output_type=Types.STRING()) \
         .sink_to(sink)
-    env.execute_async("Devices preprocessing")
+
+    env.execute_async("Devices preprocessing with tumbling windows")
 
 
-class TemperatureFunction(MapFunction):
-
-    def map(self, value):
-        device_id, temperature, execution_time = value
-        return str({"device_id": device_id, "temperature": temperature - 273, "execution_time": execution_time})
+class MaxTemperatureWindowFunction(WindowFunction):
+    def apply(self, key, window, inputs):
+        max_temperature_sample = max(inputs, key=get_sample_temperature)
+        yield str(get_sample_temperature(max_temperature_sample))
 
 
 if __name__ == '__main__':
-    python_data_stream()
+    producer_topic = "tumbling-windows-topic"
+    consumer_topic = "tumbling-windows-topic-processed"
+    python_data_stream(producer_topic, consumer_topic)

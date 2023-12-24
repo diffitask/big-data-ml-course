@@ -81,4 +81,10 @@ docker-compose exec jobmanager ./bin/flink run -py /opt/pyflink/device_job.py -d
 
 <img src="homework/screenshots/block-1/7-job-1-1.png">
 <img src="homework/screenshots/block-1/7-job-1-2.png">
-<img src="homework/screenshots/block-1/7-job-1-2.png">
+<img src="homework/screenshots/block-1/7-job-1-3.png">
+
+## Блок 2: Flink Window
+
+Документация для настройки flink window: [flink windows](https://nightlies.apache.org/flink/flink-docs-release-1.18/docs/dev/datastream/operators/windows/)
+
+
