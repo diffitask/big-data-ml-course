@@ -6,7 +6,7 @@ from kafka import KafkaProducer
 from kafka import errors
 
 
-def write_data(producer, topic, data_cnt=15):
+def write_data(producer, topic, data_cnt=200):
     for i in range(data_cnt):
         # generate some device data
         device_id = random.randint(1, 10)
@@ -39,7 +39,7 @@ def create_producer():
     raise RuntimeError("Failed to connect to brokers within 60 seconds")
 
 
-if __name__ == '__main__':
-    producer_topic = producer_topic = "checkpoints-local-topic"
-    producer = create_producer()
-    write_data(producer, producer_topic)
+# if __name__ == '__main__':
+#     producer_topic = "checkpoints-local-topic"
+#     producer = create_producer()
+#     write_data(producer, producer_topic)
