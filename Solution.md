@@ -64,7 +64,7 @@ docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --descri
 Работа consumer'а:
 <img src="homework/screenshots/block-1/6-consumer.png">
 
-Чтобы засабмитить job во flink, надо отправить job manager-у задачу запустить наш код на питоне:
+Чтобы засабмитить job во flink, надо отправить job manager'у задачу запустить наш код на питоне:
 ```commandline
 docker-compose exec jobmanager ./bin/flink run -py /opt/pyflink/device_job.py -d  
 ```
@@ -77,3 +77,8 @@ docker-compose exec jobmanager ./bin/flink run -py /opt/pyflink/device_job.py -d
 
 Сохраняем чекпоинты в локальную директорию `file:///opt/pyflink/tmp/checkpoints/logs`
 
+Отображение засабмиченной job'ы во Flink UI:
+
+<img src="homework/screenshots/block-1/7-job-1-1.png">
+<img src="homework/screenshots/block-1/7-job-1-2.png">
+<img src="homework/screenshots/block-1/7-job-1-2.png">
