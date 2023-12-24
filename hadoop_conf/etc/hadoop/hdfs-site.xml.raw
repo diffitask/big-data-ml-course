@@ -1,2 +1,0 @@
-dfs.replication: 1
-dfs.namenode.rpc-address: namenode:8020
