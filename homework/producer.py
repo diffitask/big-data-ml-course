@@ -6,7 +6,7 @@ from kafka import KafkaProducer
 from kafka import errors
 
 
-def write_data(producer, topic, data_cnt=200):
+def write_data(producer, topic, data_cnt=100):
     for i in range(data_cnt):
         # generate some device data
         device_id = random.randint(1, 10)
