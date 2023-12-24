@@ -22,7 +22,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-<img src="homework/screenshots/block-1/2-docker-compose-ps-res.png">
+<img src="screenshots/block-1/2-docker-compose-ps-res.png">
 
 Проверяем, что во Flink UI, что все корректно создано:
 
@@ -31,7 +31,7 @@ http://localhost:8081/#/overview
 
 ```
 
-<img src="homework/screenshots/block-1/1-docker-build-res.png">
+<img src="screenshots/block-1/1-docker-build-res.png">
 
 Создаем очередь 'hse2023':
 
@@ -39,7 +39,7 @@ http://localhost:8081/#/overview
 docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --create --topic hse2023 --partitions 1 --replication-factor 1
 ```
 
-<img src="homework/screenshots/block-1/3-create-topic.png">
+<img src="screenshots/block-1/3-create-topic.png">
 
 Проверим, правильно ли создалась очередь -- смотрим описание очереди:
 
@@ -47,7 +47,7 @@ docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --create
 docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --describe hse2023  
 ```
 
-<img src="homework/screenshots/block-1/4-topic-desc.png">
+<img src="screenshots/block-1/4-topic-desc.png">
 
 ### 2. Создание источника и потребителя данных из Kafka
 
@@ -56,13 +56,13 @@ docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --descri
 
 Запустим *producer_1.py*, увидим, что данные действительно отправляются в Kafka:
 
-<img src="homework/screenshots/block-1/5-data-generation.png">
+<img src="screenshots/block-1/5-data-generation.png">
 
 Теперь хотим научиться читать эти данные из Kafka. Создадим consumer (код в файле *consumer_1.py*) c offset 'earliest',
 чтобы читать все сообщения в этом топике, включая те, которые там были до момента нашего подключения.
 
 Работа consumer'а:
-<img src="homework/screenshots/block-1/6-consumer.png">
+<img src="screenshots/block-1/6-consumer.png">
 
 Чтобы засабмитить job во flink, надо отправить job manager'у задачу запустить наш код на питоне:
 ```commandline
@@ -79,9 +79,9 @@ docker-compose exec jobmanager ./bin/flink run -py /opt/pyflink/device_job.py -d
 
 Отображение засабмиченной job'ы во Flink UI:
 
-<img src="homework/screenshots/block-1/7-job-1-1.png">
-<img src="homework/screenshots/block-1/7-job-1-2.png">
-<img src="homework/screenshots/block-1/7-job-1-3.png">
+<img src="screenshots/block-1/7-job-1-1.png">
+<img src="screenshots/block-1/7-job-1-2.png">
+<img src="screenshots/block-1/7-job-1-3.png">
 
 ## Блок 2: Flink Window
 

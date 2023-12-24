@@ -37,8 +37,8 @@ def python_data_stream(producer_topic, consumer_topic):
     # checkpoint storage
     configuration = Configuration()
     # configuration.set_string("state.backend.checkpoint-storage", "filesystem")
-    checkpoints_local_dir = "file:///opt/pyflink/tmp/checkpoints/logs"
-    configuration.set_string("state.checkpoints.dir", checkpoints_local_dir)
+    checkpoints_hdfs_dir = "hdfs://namenode:9870/checkpoints/"
+    configuration.set_string("state.checkpoints.dir", checkpoints_hdfs_dir)
     env.configure(configuration)
 
     type_info: RowTypeInfo = Types.ROW_NAMED(['device_id', 'temperature', 'execution_time'],
@@ -74,7 +74,7 @@ def python_data_stream(producer_topic, consumer_topic):
     # convert Kelvins -> Celsius
     ds.map(TemperatureFunction(), Types.STRING()) \
         .sink_to(sink)
-    env.execute_async("Devices preprocessing with local checkpoints")
+    env.execute_async("Devices preprocessing with hdfs checkpoints")
 
 
 class TemperatureFunction(MapFunction):

@@ -1,5 +1,83 @@
-version: '2.1'
+version: "3.8"
+
 services:
+  # hdfs
+  namenode:
+    build:
+      context: hadoop/.
+      target: build_hadoop
+    hostname: namenode
+#     Сначала запусти меня
+    command: ["hdfs", "namenode", "-format", "-force"]
+#     А уже потом спокойно запускай меня
+#    command: ["hdfs", "namenode"]
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 9870:9870
+    volumes:
+      - hadoop_namenode:/tmp/hadoop-root/
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+
+  datanode1:
+    build:
+      context: hadoop/.
+      target: build_hadoop
+    hostname: datanode
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 9864:9864
+    volumes:
+      - hdfs1:/tmp/hadoop-hadoop
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+
+  resourcemanager:
+    build:
+      context: hadoop/.
+      target: build_hadoop
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 8088:8088
+    volumes:
+      - resourcemanager:/tmp/hadoop-hadoop
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+
+  nodemanager1:
+    build:
+      context: hadoop/.
+      target: build_hadoop
+    hostname: nodemanager1
+    command: ["yarn", "nodemanager"]
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 19888:19888
+      - 8042:8042
+    expose:
+      - 19888
+      - 8042
+    volumes:
+      - nodemanager1:/tmp/hadoop-hadoop
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+
+  jupyter:
+    build:
+      context: hadoop/.
+      target: jupyter_hadoop
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 8888:8888
+    volumes:
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
+
+  # flink
   jobmanager:
     build: .
     image: pyflink/pyflink:1.16.0-scala_2.12
@@ -13,10 +91,11 @@ services:
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+
   taskmanager:
     image: pyflink/pyflink:1.16.0-scala_2.12
     volumes:
-    - .:/opt/pyflink
+      - .:/opt/pyflink
     expose:
       - "6121"
       - "6122"
@@ -27,6 +106,7 @@ services:
       - jobmanager:jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
     ulimits:
@@ -35,6 +115,7 @@ services:
         hard: 65536
     ports:
       - "2181:2181"
+
   kafka:
     image: wurstmeister/kafka:2.13-2.8.1
     ports:
@@ -48,4 +129,15 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL_SAME_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL_SAME_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+networks:
+  default:
+    name: yohoho
+
+volumes:
+  hdfs1:
+  resourcemanager:
+  nodemanager1:
+  hadoop_namenode:
+
 

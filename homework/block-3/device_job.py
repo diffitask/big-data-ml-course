@@ -74,17 +74,16 @@ def python_data_stream(producer_topic, consumer_topic):
     # convert Kelvins -> Celsius
     ds.map(TemperatureFunction(), Types.STRING()) \
         .sink_to(sink)
-    env.execute_async("Devices preprocessing with local checkpoints")
+    env.execute_async("Devices preprocessing with consumer backoff")
 
 
 class TemperatureFunction(MapFunction):
-
     def map(self, value):
         device_id, temperature, execution_time = value
         return str({"device_id": device_id, "temperature": temperature - 273, "execution_time": execution_time})
 
 
 if __name__ == '__main__':
-    producer_topic = "checkpoints-local-topic"
-    consumer_topic = "checkpoints-local-topic-processed"
+    producer_topic = "backoff-topic"
+    consumer_topic = "backoff-topic-processed"
     python_data_stream(producer_topic, consumer_topic)
