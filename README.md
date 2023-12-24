@@ -55,6 +55,7 @@ docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --descri
 
 ```
 
+Чтобы засабмитить job во flink, надо отправить job manager-у задачу запустить наш код на питоне:
 ```commandline
 docker-compose exec jobmanager ./bin/flink run -py /opt/pyflink/device_job.py -d  
 ```

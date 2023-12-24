@@ -6,15 +6,15 @@ from kafka import KafkaProducer
 from kafka import errors
 
 
-def write_data(producer):
-    data_cnt = 20000
-    topic = "itmo2023"
-
+def write_data(producer, topic="hse2023", data_cnt=20000):
     for i in range(data_cnt):
+        # generate some device data
         device_id = random.randint(1, 10)
         temperature = random.uniform(60, 110) + 273
         execution_time = i * 5
         cur_data = {"device_id": device_id, "temperature": temperature, "execution_time": execution_time}
+
+        # send data from producer to kafka
         producer.send(topic,
                       key=dumps(device_id).encode('utf-8'),
                       value=cur_data)

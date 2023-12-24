@@ -8,8 +8,8 @@ def message_handler(value)->None:
 
 def create_consumer():
     print("Connecting to Kafka brokers")
-    consumer = KafkaConsumer("itmo2023",
-                             group_id='itmo_group1',
+    consumer = KafkaConsumer("hse2023",
+                             group_id='hse-processed-group-2',
                              bootstrap_servers='localhost:29092',
                              auto_offset_reset='earliest',
                              enable_auto_commit=True)
