@@ -1,22 +1,61 @@
-# bigdata-docker-compose
-(Почти) настроенный докер с последним hadoop и сопутствующими инструментами на борту
+## Kafka
 
-Образ при сборке выкачивает много данных (ставит хадупы\юпитеры\хайвы и т.д.). Это норма.
-Лучше не запускаться при подключении к лимитному интернету.
+### Поднимаем окружение
 
-Для запуска:
+Сборка:
 
-1. Поставить docker + docker-compose на локальную машину
+```commandline
+docker-compose build
+```
 
-Для запуска hadoop:
-1. Сначала запускаем неймноду с командой command: ["hdfs", "namenode", "-format", "-force"] 
-2. Так запуститься надо только в первый раз (либо, после того, как вы снесли образ и примонтированный раздел)
-3. После того, как контейнер отработал и завершился, запускаемся с командой command: ["hdfs", "namenode"]
-4. После неймноды поднимаем датаноды, нодменеджеры и т.д.
+Поднимаем наши компоненты: jobmanager, taskmanager, kafka, zookeper
 
-Для запуска hive:
-1. Сначала поднимаем постгрес.
-1. Затем поднимаем метастор с командой command: ["schematool", "--dbType", "postgres", "--initSchema"]
-2. Так запуститься надо только в первый раз (либо, после того, как вы снесли образ и примонтированный раздел)
-2. После того, как контейнер отработал и завершился, запускаемся с командой command: [ "hive", "--service", "metastore" ]
-3. После метастора запускаем hiveserver2
+```commandline
+docker-compose up -d
+```
+
+Смотрим процесс:
+
+```commandline
+docker-compose ps
+```
+Проверим в браузерном UI:
+```
+http://localhost:8081/#/overview
+
+```
+
+Чтобы все погасить:
+
+```commandline
+docker-compose down -v
+```
+
+---
+
+### Создание очереди
+
+- Указываем адрес брокера: 'kafka' + порт -- это внутри сети докера.
+- Создать новый топик + имя топика -- это просто название очереди. Очереди обычно разделяем по топикам, чтобы не замешивать все данные в одном месте. Разные топики отчевают за хранение данных под разные задачи.
+- Задать параметры 'partitions' и 'replication_factor'
+
+```commandline
+docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --create --topic itmo --partitions 1 --replication-factor 1
+```
+
+Проверим, правильно ли создалась наша очередь в kafka:
+
+```commandline
+docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --describe itmo  
+```
+
+Можем изменить число партиций нашей очереди:
+```commandline
+ docker-compose exec kafka kafka-topics.sh --bootstrap-server kafka:9092 --alter --topic itmo --partitions 2
+
+```
+
+Чтобы засабмитить job во flink, надо отправить job manager-у задачу запустить наш код на питоне:
+```commandline
+docker-compose exec jobmanager ./bin/flink run -py /opt/pyflink/device_job.py -d  
+```
